@@ -1,6 +1,8 @@
-# SyntacticReview AI — Production-Grade AI-Powered Code Reviewer
+# CodeWhisper—AI-Powered Code Review & Debugging Platform
 
-An ultra-modern, secure, full-stack application that provides comprehensive, structured AI-driven code reviews (analyzing performance issues, syntax errors, style violations, security vulnerabilities, and logic bugs) with actionable refactored fixes, comparative editors, and paginated review history.
+CodeWhisper is an intelligent AI-based code review platform that helps developers analyze, debug, optimize, and improve their code using Generative AI. The platform detects bugs, security vulnerabilities, bad coding practices, and performance issues while providing smart suggestions and improved code solutions in real time.
+
+Built using the MERN Stack, CodeWhisper aims to act like an AI coding mentor for developers, students, and teams.
 
 ---
 

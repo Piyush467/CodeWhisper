@@ -6,7 +6,7 @@ Built using the MERN Stack, CodeWhisper aims to act like an AI coding mentor for
 
 ---
 
-## 🌟 Architectural Features & Highlights
+##  Architectural Features & Highlights
 
 - **Vibrant Glassmorphic Aesthetics**: Premium obsidian and indigo-cyber dark theme featuring custom fonts, glowing accent overlays, and dynamic interactive hover controls.
 - **Side-by-Side Comparison Workspace**: High-performance, line-numbered comparison frames contrasting original code blocks against optimized Gemini-refactored recommendations.

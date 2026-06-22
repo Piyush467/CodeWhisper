@@ -1,6 +1,13 @@
 const cors = require('cors');
 
 const getAllowedOrigins = () => {
+  const defaultOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'https://code-whisper-sigma.vercel.app'
+  ];
+
   const configuredOrigins = [
     process.env.FRONTEND_URL,
     process.env.FRONTEND_URLS
@@ -10,12 +17,7 @@ const getAllowedOrigins = () => {
     .map((origin) => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean);
 
-  return [
-    ...configuredOrigins,
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:5173'
-  ];
+  return [...new Set([...configuredOrigins, ...defaultOrigins])];
 };
 
 const corsOptions = {
@@ -27,7 +29,7 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(normalizedOrigin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,

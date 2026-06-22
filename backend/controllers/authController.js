@@ -105,11 +105,7 @@ const authController = {
    */
   logout: asyncHandler(async (req, res) => {
     // Clear cookie
-    res.clearCookie('token', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
-    });
+    res.clearCookie('token', jwtService.getClearCookieOptions());
 
     logger.info('User logged out');
 

@@ -1,7 +1,20 @@
 import axios from 'axios';
 
+const normalizeApiBaseURL = (url) => {
+  if (!url) return '/api';
+
+  const trimmedUrl = url.trim().replace(/\/+$/, '');
+  return trimmedUrl.endsWith('/api') ? trimmedUrl : `${trimmedUrl}/api`;
+};
+
+const apiBaseURL = normalizeApiBaseURL(import.meta.env.VITE_API_URL);
+
+if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
+  console.warn('VITE_API_URL is not configured. The app will call /api on the current frontend domain.');
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: apiBaseURL,
   timeout: 30000, // 30 seconds for review submissions
   withCredentials: true, // Crucial to send/receive JWT cookies
   headers: {

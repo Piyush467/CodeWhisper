@@ -35,16 +35,25 @@ const jwtService = {
    */
   getCookieOptions: () => {
     const isProduction = process.env.NODE_ENV === 'production';
+    const sameSite = process.env.COOKIE_SAMESITE || (isProduction ? 'none' : 'lax');
     
     // Calculate standard expiry (default 7 days)
     const maxAge = 7 * 24 * 60 * 60 * 1000;
     
     return {
       httpOnly: true, // Prevents client-side XSS access
-      secure: isProduction, // HTTPS only in production
-      sameSite: isProduction ? 'strict' : 'lax', // CSRF protection
+      secure: isProduction || sameSite === 'none', // SameSite=None requires HTTPS
+      sameSite,
       maxAge: maxAge
     };
+  },
+
+  /**
+   * Helper to clear the auth cookie with matching security attributes.
+   */
+  getClearCookieOptions: () => {
+    const { maxAge, ...options } = jwtService.getCookieOptions();
+    return options;
   }
 };
 

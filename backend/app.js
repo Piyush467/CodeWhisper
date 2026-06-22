@@ -11,6 +11,8 @@ const historyRoutes = require('./routes/historyRoutes');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Request logging middleware
 app.use((req, res, next) => {
   logger.debug(`${req.method} ${req.originalUrl}`);

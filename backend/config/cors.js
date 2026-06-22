@@ -1,15 +1,30 @@
 const cors = require('cors');
 
+const getAllowedOrigins = () => {
+  const configuredOrigins = [
+    process.env.FRONTEND_URL,
+    process.env.FRONTEND_URLS
+  ]
+    .filter(Boolean)
+    .flatMap((value) => value.split(','))
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+
+  return [
+    ...configuredOrigins,
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173'
+  ];
+};
+
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      process.env.FRONTEND_URL || 'http://localhost:5173',
-      'http://localhost:3000',
-      'http://127.0.0.1:5173'
-    ];
+    const allowedOrigins = getAllowedOrigins();
+    const normalizedOrigin = origin?.replace(/\/+$/, '');
     
     // Allow requests with no origin (like mobile apps or curl)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.includes(normalizedOrigin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

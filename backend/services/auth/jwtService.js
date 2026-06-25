@@ -1,24 +1,27 @@
-const jwt = require('jsonwebtoken');
-const logger = require('../../utils/logger');
+const jwt = require("jsonwebtoken");
+const logger = require("../../utils/logger");
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-super-secret-key-change-in-prod';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_SECRET =
+  process.env.JWT_SECRET || "fallback-super-secret-key-change-in-prod";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+
+const ms = require("ms");
 
 const jwtService = {
   /**
    * Signs a payload into a JWT.
-   * @param {object} payload 
+   * @param {object} payload
    * @returns {string} Token
    */
   generateToken: (payload) => {
     return jwt.sign(payload, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN
+      expiresIn: JWT_EXPIRES_IN,
     });
   },
 
   /**
    * Verifies a JWT token.
-   * @param {string} token 
+   * @param {string} token
    * @returns {object|null} Decoded payload or null if invalid
    */
   verifyToken: (token) => {
@@ -34,17 +37,19 @@ const jwtService = {
    * Helper to set cookie parameters.
    */
   getCookieOptions: () => {
-    const isProduction = process.env.NODE_ENV === 'production';
-    const sameSite = process.env.COOKIE_SAMESITE || (isProduction ? 'none' : 'lax');
-    
+    const isProduction = process.env.NODE_ENV === "production";
+    const sameSite =
+      process.env.COOKIE_SAMESITE || (isProduction ? "none" : "lax");
+
     // Calculate standard expiry (default 7 days)
-    const maxAge = 7 * 24 * 60 * 60 * 1000;
-    
+
+    const maxAge = ms(JWT_EXPIRES_IN);
+
     return {
       httpOnly: true, // Prevents client-side XSS access
-      secure: isProduction || sameSite === 'none', // SameSite=None requires HTTPS
+      secure: isProduction || sameSite === "none", // SameSite=None requires HTTPS
       sameSite,
-      maxAge: maxAge
+      maxAge: maxAge,
     };
   },
 
@@ -54,7 +59,7 @@ const jwtService = {
   getClearCookieOptions: () => {
     const { maxAge, ...options } = jwtService.getCookieOptions();
     return options;
-  }
+  },
 };
 
 module.exports = jwtService;

@@ -50,7 +50,7 @@ export const DashboardLayout = ({ children }) => {
             alignItems: 'center',
             gap: '8px'
           }}>
-            SyntacticReview 
+            Codewhisper
             <span style={{
               fontSize: '0.65rem',
               fontWeight: '700',

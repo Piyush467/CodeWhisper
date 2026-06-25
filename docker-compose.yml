@@ -1,0 +1,31 @@
+services:
+  
+
+  redis:
+    image: redis:7-alpine
+    container_name: codewhisper-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    container_name: codewhisper-backend
+    restart: always
+    depends_on:     
+      - redis
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+
+  frontend:
+    build: ./frontend
+    container_name: codewhisper-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+

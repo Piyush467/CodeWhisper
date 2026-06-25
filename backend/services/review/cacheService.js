@@ -1,74 +1,42 @@
-const crypto = require('crypto');
-const logger = require('../../utils/logger');
+const crypto = require("crypto");
+const redis = require("../../config/redis");
+const logger = require("../../utils/logger");
 
-const CACHE_LIMIT = 100;
-const cache = new Map();
-const queue = [];
+const CACHE_TTL = 3600;
 
 const cacheService = {
-  /**
-   * Generates a unique key for the cache based on code and language.
-   * @param {string} code 
-   * @param {string} language 
-   * @returns {string} MD5 Hash
-   */
-  generateKey: (code, language) => {
-    const cleanCode = (code || '').trim();
-    const cleanLang = (language || '').trim().toLowerCase();
-    return crypto
-      .createHash('md5')
-      .update(`${cleanLang}:${cleanCode}`)
-      .digest('hex');
+  generateKey(code, language) {
+    return crypto.createHash("md5").update(`${language}:${code}`).digest("hex");
   },
 
-  /**
-   * Retrieves an item from cache.
-   * @param {string} key 
-   * @returns {object|null}
-   */
-  get: (key) => {
-    if (cache.has(key)) {
-      logger.info('Cache hit for code review key.');
-      return cache.get(key);
-    }
-    return null;
-  },
-
-  /**
-   * Stores a review inside the cache.
-   * Evicts the oldest item if it exceeds CACHE_LIMIT.
-   * @param {string} key 
-   * @param {object} review 
-   */
-  set: (key, review) => {
+  async get(key) {
     try {
-      if (cache.has(key)) {
-        cache.set(key, review);
-        return;
-      }
+      const data = await redis.get(key);
 
-      if (queue.length >= CACHE_LIMIT) {
-        const oldestKey = queue.shift();
-        cache.delete(oldestKey);
-        logger.debug('Evicted oldest code review from cache.');
-      }
+      if (!data) return null;
 
-      cache.set(key, review);
-      queue.push(key);
-      logger.info('Review successfully saved to in-memory cache.');
-    } catch (error) {
-      logger.error('Failed to save review in cache', error);
+      logger.info("Redis cache hit");
+
+      return JSON.parse(data);
+    } catch (err) {
+      logger.error("Redis get error", err);
+      return null;
     }
   },
 
-  /**
-   * Clears the cache completely.
-   */
-  clear: () => {
-    cache.clear();
-    queue.length = 0;
-    logger.info('Cache cleared.');
-  }
+  async set(key, value) {
+    try {
+      await redis.set(key, JSON.stringify(value), "EX", CACHE_TTL);
+
+      logger.info("Review cached in Redis");
+    } catch (err) {
+      logger.error("Redis set error", err);
+    }
+  },
+
+  async clear() {
+    await redis.flushall();
+  },
 };
 
 module.exports = cacheService;

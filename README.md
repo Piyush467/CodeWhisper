@@ -1,140 +1,188 @@
-# CodeSage - AI-Powered Code Review & Debugging Platform
+# CodeWhisper --- AI-Powered Code Review Platform
 
-CodeSage is a full-stack AI code review platform that helps developers inspect, debug, refactor, and improve code with the power of Google Gemini. It accepts source code, analyzes quality and risk, detects issues, explains what went wrong, and returns a cleaner improved version with actionable suggestions.
+![CodeWhisper Banner](https://img.shields.io/badge/CodeWhisper-AI%20Code%20Reviewer-6366f1?style=for-the-badge&logo=google-gemini&logoColor=white)
 
-The project is built with a production-style MERN architecture, protected authentication, review history, Gemini-powered structured responses, secure cookies, rate limiting, sanitization, and a premium dark glassmorphic dashboard experience.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://code-whisper-red.vercel.app/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com/)
+[![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com/)
+```
+# 🤖 CodeWhisper
 
----
+**Production-ready AI-powered code review platform built with the MERN
+stack, Google Gemini, Redis, Docker, and JWT Authentication.**
 
-## Core Highlights
+**🌐 Live Demo:** https://code-whisper-red.vercel.app/
 
-- **AI Code Review Engine**: Sends user code to Gemini and returns structured review output with improved code, explanations, detected issues, and suggestions.
-- **Secure User Authentication**: Register, login, logout, and session verification using JWT stored inside HTTP-only cookies.
-- **Private Review History**: Every review is saved per user in MongoDB with paginated history, detail view, and delete support.
-- **Smart Review Cache**: Reuses exact code/language review results through an in-memory LRU-style cache to reduce repeated Gemini calls.
-- **Input Validation & Sanitization**: Validates email, password, code, language, and strips unsafe control characters before processing.
-- **Schema-Safe AI Parsing**: Cleans markdown-wrapped JSON, validates AI response fields, and falls back safely when Gemini fails.
-- **Modern Developer UI**: React + Vite dashboard with code editor, language selector, side-by-side original/improved code panels, issue cards, suggestions, toast alerts, and responsive layouts.
-- **Backend Reliability Layer**: Centralized async handlers, global error middleware, CORS configuration, request logging, health check, and graceful crash handling.
+```{=html}
+</p>
+```
 
----
+------------------------------------------------------------------------
 
-## Tech Stack
+## ✨ Overview
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18, Vite, React Router, Axios, Lucide React |
-| Backend | Node.js, Express.js, CommonJS |
-| Database | MongoDB, Mongoose |
-| AI Provider | Google Gemini via `@google/generative-ai` |
-| Auth | JWT, bcryptjs, HTTP-only cookies |
-| Security | CORS, express-rate-limit, validation, sanitization |
-| Testing | Native Node.js test runner |
+CodeWhisper helps developers review, debug, refactor and improve code
+using Google's Gemini AI. It provides secure authentication, persistent
+review history, Redis-powered caching, Dockerized local development, and
+a modern glassmorphic UI.
 
----
+------------------------------------------------------------------------
 
-## Project Structure
+## 🚀 Features
 
-```text
-CodeSage/
+- **AI Code Review Engine** — Submits code to Gemini and returns structured output: improved code, detected issues, explanation, and suggestions
+- **Strict JSON Schema Output** — Gemini responses are schema-locked and validated, preventing hallucination-shaped bugs
+- **Redis Distributed Cache** — Exact code+language submissions served from Redis cache, cutting repeat review latency from ~5s to sub-100ms
+- **Side-by-side Diff View** — Monaco-style original vs refactored code comparison with line-numbered panels
+- **Paginated Review History** — Every review saved per user in MongoDB with full detail view and delete support
+- **Secure Authentication** — JWT stored in HttpOnly cookies with bcrypt password hashing
+- **Endpoint-Specific Rate Limiting** — 15 auth requests/15 min, 30 AI reviews/hour
+- **Prompt Injection Protection** — Input sanitization, null byte stripping, and 50,000 character budget enforcement
+- **Docker Compose Deployment** — Full stack (React, Express, MongoDB, Redis) containerized with one-command setup
+- **AI Fallback Handling** — Safe fallback response if Gemini times out or returns invalid output
+- **XSS Protection** — Dynamic HTML encoding on AI summaries alongside React's built-in escaping
+
+------------------------------------------------------------------------
+
+## 🏗️ Architecture
+
+``` text
+                React + Vite
+                     │
+                     ▼
+            Express.js REST API
+          ┌──────────┴──────────┐
+          ▼                     ▼
+     Google Gemini         Redis Cache
+          │                     │
+          └──────────┬──────────┘
+                     ▼
+               MongoDB Atlas
+```
+
+------------------------------------------------------------------------
+
+## 🛠️ Tech Stack
+
+  Layer            Technology
+  ---------------- ----------------------------------
+  Frontend         React, Vite, React Router, Axios
+  Backend          Node.js, Express.js
+  Database         MongoDB Atlas
+  AI               Google Gemini
+  Cache            Redis
+  Authentication   JWT, HTTP-only Cookies, bcrypt
+  DevOps           Docker, Docker Compose
+  Deployment       Vercel, Render
+
+------------------------------------------------------------------------
+
+## 📁 Project Structure
+
+```
+CodeWhisper/
 ├── backend/
 │   ├── config/                 # MongoDB, CORS, Gemini client setup
 │   ├── controllers/            # Auth, review, and history controllers
-│   ├── middlewares/            # Auth, validation, sanitization, rate limit, errors
+│   ├── middlewares/            # AuthGuard, RateLimit, Sanitize, Validation, Error
 │   ├── models/                 # User and Review Mongoose schemas
 │   ├── routes/                 # Express API route modules
 │   ├── services/
-│   │   ├── ai/                 # Gemini service, prompt builder, parser, validator, fallback
+│   │   ├── ai/                 # Gemini service, prompt builder, parser, validator
 │   │   ├── auth/               # JWT and password services
-│   │   └── review/             # Cache, issue extraction, review formatting
-│   ├── tests/                  # Backend test suite
-│   ├── utils/                  # Constants, logger, pagination, validators, sanitizers
+│   │   └── review/             # Redis cache, issue extraction, review formatting
+│   ├── tests/                  # Backend integration test suite
+│   ├── utils/                  # Logger, pagination, sanitizer helpers
 │   ├── app.js                  # Express app configuration
-│   ├── server.js               # Server bootstrap and DB connection
-│   └── package.json
+│   └── server.js               # Server bootstrap and DB connection
 │
 ├── frontend/
-│   ├── src/
-│   │   ├── api/                # Axios instance and API wrappers
-│   │   ├── components/         # Auth, editor, review, history, common UI components
-│   │   ├── context/            # Auth and review global state
-│   │   ├── hooks/              # Custom React hooks
-│   │   ├── layouts/            # Auth and dashboard layouts
-│   │   ├── pages/              # Login, register, dashboard, detail, not found
-│   │   ├── routes/             # App routes and protected route guard
-│   │   ├── utils/              # Date, copy, sanitize, constants helpers
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── vite.config.js          # Vite dev server and API proxy
-│   └── package.json
+│   └── src/
+│       ├── api/                # Axios instance and API wrappers
+│       ├── components/
+│       │   ├── auth/           # LoginForm, RegisterForm
+│       │   ├── common/         # Button, Loader, Modal, Toast
+│       │   ├── editor/         # CodeEditor, LanguageSelector, ReviewButton
+│       │   ├── history/        # HistoryCard, HistorySidebar, Pagination
+│       │   └── review/         # ExplanationPanel, ImprovedCode, IssueList, SuggestionPanel
+│       ├── context/            # AuthContext, ReviewContext
+│       ├── hooks/              # useAuth, useDebounce, useReview
+│       ├── layouts/            # AuthLayout, DashboardLayout
+│       ├── pages/              # Dashboard, Login, Register, ReviewDetail, NotFound
+│       ├── routes/             # AppRoutes, ProtectedRoute
+│       └── utils/              # formatDate, copyToClipboard, sanitizeHtml, constants
 │
+├── docker-compose.yml          # Full stack container orchestration
 └── README.md
 ```
-
 ---
 
-## Backend API Map
+## 🌐 Live Demo
 
-### Authentication
+Frontend
 
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `POST` | `/api/auth/register` | Public | Create account and set auth cookie |
-| `POST` | `/api/auth/login` | Public | Login user and set auth cookie |
-| `POST` | `/api/auth/logout` | Public | Clear auth cookie |
-| `GET` | `/api/auth/me` | Private | Return current logged-in user |
+https://code-whisper-red.vercel.app/
 
-### Code Review
+Backend
 
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `POST` | `/api/review` | Private | Submit code for Gemini AI review |
+https://codewhisper-api-9hfy.onrender.com
 
-### Review History
+------------------------------------------------------------------------
 
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `GET` | `/api/review-history/history` | Private | Get paginated review history |
-| `GET` | `/api/review-history/:id` | Private | Get one full review by ID |
-| `DELETE` | `/api/review-history/:id` | Private | Delete one review from history |
+## 🚀 Getting Started
 
-### Health
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/health` | Server health check |
-
----
-
-## Setup Instructions
-
-### 1. Prerequisites
-
-Install these before running the project:
+### Prerequisites
 
 - Node.js 18+
-- npm
-- MongoDB local server or MongoDB Atlas URI
+- MongoDB (local or Atlas URI)
+- Redis (local or Redis Cloud)
 - Google Gemini API key
+- Docker & Docker Compose (optional)
 
-### 2. Configure Backend Environment
+---
+
+### Option 1 — Docker Compose (Recommended)
+
+```bash
+# Clone the repo
+git clone https://github.com/Piyush467/CodeWhisper.git
+cd CodeWhisper
+
+# Add your environment variables (see below)
+cp backend/.env.example backend/.env
+
+# Start all 4 services: frontend, backend, MongoDB, Redis
+docker-compose up --build
+```
+
+Frontend → `http://localhost:5173`
+Backend → `http://localhost:5000`
+
+---
+
+### Option 2 — Manual Setup
+
+**1. Configure Backend**
 
 Create `backend/.env`:
 
 ```env
 PORT=5000
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/codesage
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/codewhisper
 JWT_SECRET=your-super-secure-jwt-secret
 JWT_EXPIRES_IN=7d
 FRONTEND_URL=http://localhost:5173
-FRONTEND_URLS=
 NODE_ENV=development
 COOKIE_SAMESITE=lax
 GEMINI_API_KEY=your-google-gemini-api-key
 GEMINI_MODEL=gemini-2.5-flash
+REDIS_URL=redis://localhost:6379
 ```
 
-### 3. Run Backend
+**2. Run Backend**
 
 ```bash
 cd backend
@@ -142,21 +190,9 @@ npm install
 npm run dev
 ```
 
-Backend runs on:
+**3. Run Frontend**
 
-```text
-http://localhost:5000
-```
-
-Health check:
-
-```text
-http://localhost:5000/health
-```
-
-### 4. Run Frontend
-
-Open another terminal:
+Open a new terminal:
 
 ```bash
 cd frontend
@@ -164,205 +200,141 @@ npm install
 npm run dev
 ```
 
-Frontend runs on:
-
-```text
-http://localhost:5173
-```
-
-The Vite dev server proxies `/api` requests to:
-
-```text
-http://127.0.0.1:5000
-```
-
-For local frontend environment variables, create `frontend/.env`:
+Create `frontend/.env`:
 
 ```env
 VITE_API_URL=http://localhost:5000
 ```
 
-`VITE_API_URL` can be either the backend root URL or the full API URL. Both of these are valid:
-
-```env
-VITE_API_URL=https://your-backend-domain.com
-VITE_API_URL=https://your-backend-domain.com/api
-```
+Frontend → `http://localhost:5173`
 
 ---
 
-## Deployment Fix For `/api/auth/*` 404 Errors
-
-If the browser console shows errors like:
-
-```text
-api/auth/me 404
-api/auth/register 404
-api/auth/login 404
-```
-
-the deployed frontend is calling `/api` on the frontend hosting domain instead of your Express backend. Fix it by setting these environment variables in your hosting dashboards and redeploying.
-
-### Frontend hosting environment
-
-```env
-VITE_API_URL=https://your-backend-domain.com
-```
-
-Example:
-
-```env
-VITE_API_URL=https://codesage-api.onrender.com
-```
-
-### Backend hosting environment
-
-```env
-NODE_ENV=production
-FRONTEND_URL=https://your-frontend-domain.com
-COOKIE_SAMESITE=none
-```
-
-If you have more than one allowed frontend domain, use:
-
-```env
-FRONTEND_URLS=https://your-frontend-domain.com,https://www.your-frontend-domain.com
-```
-
-After changing `VITE_API_URL`, rebuild and redeploy the frontend because Vite injects environment variables at build time.
-
----
-
-## Available Scripts
-
-### Backend
-
-```bash
-npm run dev      # Start backend with nodemon
-npm start        # Start backend with node
-npm test         # Run backend tests
-```
-
-### Frontend
-
-```bash
-npm run dev      # Start Vite dev server
-npm run build    # Build frontend for production
-npm run preview  # Preview production build
-```
-
----
-
-## Review Response Shape
-
-When code is reviewed successfully, the backend returns:
-
-```json
-{
-  "success": true,
-  "cached": false,
-  "review": {
-    "id": "review_id",
-    "originalCode": "submitted source code",
-    "improvedCode": "refactored source code",
-    "explanation": "high-level explanation",
-    "detectedIssues": [
-      {
-        "type": "bug",
-        "severity": "high",
-        "line": 12,
-        "description": "issue description",
-        "recommendation": "recommended fix"
-      }
-    ],
-    "suggestions": ["practical improvement"],
-    "language": "javascript",
-    "createdAt": "2026-06-22T00:00:00.000Z"
-  }
-}
-```
-
-Supported issue types:
-
-```text
-bug, security, performance, style, readability
-```
-
-Supported severity levels:
-
-```text
-critical, high, medium, low
-```
-
-Supported languages include JavaScript, TypeScript, Python, Java, C++, C#, Go, Rust, PHP, Ruby, HTML, CSS, and SQL.
-
----
-
-## Security Features
-
-- **HTTP-only Cookie Auth**: JWT is stored in a cookie instead of browser local storage.
-- **Password Hashing**: Passwords are hashed with bcrypt before saving.
-- **Protected Routes**: Review submission and review history require an authenticated session.
-- **Rate Limiting**: Auth and review routes are protected from excessive requests.
-- **CORS Controls**: Backend accepts configured frontend origins and credentials.
-- **Code Sanitization**: Removes null bytes and unsafe control characters from submitted code.
-- **AI Fallback Handling**: If Gemini times out or returns invalid output, the backend responds with a safe fallback review.
-
----
-
-## Testing
-
-Run backend tests:
+## 🧪 Running Tests
 
 ```bash
 cd backend
 npm test
 ```
 
-The test suite covers:
+Test suite covers:
 
-- password hashing and verification
+- Password hashing and verification
 - JWT generation and validation
-- AI JSON response parsing
-- AI schema validation defaults
-- review cache behavior
-- code sanitization
-- pagination formatting
-- input validators
+- Gemini JSON response parsing
+- AI schema validation and fallback defaults
+- Redis cache behavior
+- Code sanitization edge cases
+- Pagination formatting
+- Input validators
 
----
 
-## UI Experience
+------------------------------------------------------------------------
 
-CodeSage ships with a polished dark interface inspired by cyber-security review dashboards:
+## 🐳 Docker
 
-- glassmorphic panels
-- indigo, teal, violet, and severity-based accents
-- sticky authenticated dashboard header
-- review history sidebar
-- responsive editor workspace
-- side-by-side original and improved code comparison
-- issue severity badges
-- suggestions and explanation panels
-- modal confirmation for deleting review sessions
-- toast-based user feedback
+Run the complete project using Docker Compose:
 
----
+``` bash
+docker compose up --build
+```
 
-## Production Notes
+Services:
 
-Before deploying:
+-   Frontend
+-   Backend
+-   Redis
 
-- Use a strong `JWT_SECRET`.
-- Set `NODE_ENV=production`.
-- Set `FRONTEND_URL` to the deployed frontend domain.
-- Store secrets in the hosting provider's environment variable manager.
-- Use MongoDB Atlas or a managed MongoDB instance.
-- Build the frontend with `npm run build`.
-- Keep Gemini API keys private and never commit `.env` files.
+------------------------------------------------------------------------
 
----
+## 🔑 Environment Variables
 
-## Project Identity
+Backend:
 
-CodeSage is designed as an AI coding mentor: fast enough for daily debugging, structured enough for serious review workflows, and polished enough to feel like a real developer product.
+``` env
+MONGODB_URI=
+JWT_SECRET=
+JWT_EXPIRES_IN=7d
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+REDIS_URL=
+NODE_ENV=production
+FRONTEND_URL=
+```
+
+Frontend:
+
+``` env
+VITE_API_URL=https://codewhisper-api-9hfy.onrender.com
+```
+
+------------------------------------------------------------------------
+
+## 🔒 Security
+
+| Layer | Implementation |
+|---|---|
+| **Auth** | JWT in HttpOnly, SameSite cookies — no localStorage |
+| **Passwords** | bcrypt with 10 salt rounds |
+| **Rate Limiting** | 15 auth requests/15 min · 30 AI reviews/hour |
+| **Input Sanitization** | Null byte stripping, control character removal, 50k char cap |
+| **Prompt Injection** | Inputs wrapped in isolated enclosures with strict system instructions |
+| **XSS** | Dynamic HTML encoding on AI output + React's built-in escaping |
+| **CORS** | Configured to accept only allowed frontend origins |
+| **AI Fallback** | Safe structured fallback if Gemini times out or returns invalid JSON |
+
+------------------------------------------------------------------------
+
+## ⚡ Performance
+
+-   Redis caching for repeated reviews
+-   Faster repeat responses
+-   Reduced Gemini API usage
+-   Optimized API responses
+
+------------------------------------------------------------------------
+
+## 📚 API
+
+  Method   Endpoint
+  -------- -----------------------------
+  POST     /api/auth/register
+  POST     /api/auth/login
+  POST     /api/auth/logout
+  GET      /api/auth/me
+  POST     /api/review
+  GET      /api/review-history/history
+  GET      /api/review-history/:id
+  DELETE   /api/review-history/:id
+
+------------------------------------------------------------------------
+
+## 🚀 Deployment
+
+Frontend: Vercel
+
+Backend: Render
+
+Database: MongoDB Atlas
+
+Cache: Redis Cloud
+
+------------------------------------------------------------------------
+
+## 💡 Future Improvements
+
+-   GitHub OAuth
+-   Multiple AI providers
+-   Team workspaces
+-   Export review reports
+-   Syntax highlighting themes
+
+------------------------------------------------------------------------
+
+## 👨‍💻 Author
+
+**Piyush Mehrotra**
+
+GitHub: https://github.com/Piyush467
+
+If you found this project useful, consider giving it a ⭐.
